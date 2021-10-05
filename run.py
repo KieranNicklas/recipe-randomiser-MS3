@@ -13,6 +13,34 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('recipes')
 
 
+def option_selection():
+    """
+    Provides the user with the option to add, amend, remove or 
+    print their recipes
+    """
+    print("Please select from one of the following options\n")
+    print("If you would like to add a new recipe, please enter 1\n")
+    print("If you would like to amend an existing recipe, please enter 2\n")
+    print("If you would like to delete an existig recipe, please enter 3\n")
+    print("If you would like to print a number of recipes, please enter 4\n")
+
+    option_choice = int(input("Please enter your choice here\n"))
+
+    if option_choice == 1:
+        add_new_recipe()
+    elif option_choice == 2:
+        amend_existing_recipe()
+    elif option_choice == 3:
+        delete_existing_choice()
+    elif option_choice == 4:
+        show_recipes
+    else:
+        raise ValueError(
+            f"A valid option was not entered, you entered {option_choice}."
+            f"Please try again"
+        )
+
+
 def add_new_recipe():
     """
     Accepts user input to enter the name of a recipe, a URL,
@@ -44,7 +72,7 @@ def check_entry(values):
     """
     try:
         [str(entries) for entries in values]
-        if not len(values):
+        if not values:
             raise TypeError(
                 f"Four entries are required. You have provided {len(values)}\n"
             )
@@ -88,6 +116,20 @@ def add_to_worksheet(recipes, worksheet):
     print(f"Recipe safely stored in the {worksheet} worksheet")
 
 
+def repeat_process():
+    """
+    Provides the user with the option to return to the beginning
+    to add another recipe
+    """
+
+    user_choice = input("Would you like to add another recipe?\n")
+    if user_choice == "Yes":
+        add_new_recipe()
+    elif user_choice == "No":
+        print("Thank you for adding your recipe(s)")
+
+
 recipes = add_new_recipe()
 correct_worksheet = determine_worksheet()
 add_to_worksheet(recipes, correct_worksheet)
+repeat_process()
