@@ -26,23 +26,28 @@ def add_new_recipe():
 
         recipe_entry = input("Please enter your recipe name here\n")
         url_entry = input("Please enter the recipe's URL\n")
-        is_vegan = input("Is the recipe Vegan friendly? Yes or No\n")
-        is_vegetarian = input("Is the recipe Vegetarian? Yes or No\n")
+        # is_vegan = input("Is the recipe Vegan friendly? Yes or No\n")
+        # is_vegetarian = input("Is the recipe Vegetarian? Yes or No\n")
 
-        user_entry = recipe_entry, url_entry, is_vegan, is_vegetarian
+        user_entry = [recipe_entry, url_entry]
 
         if check_entry(user_entry):
-            print(f"{user_entry} is valid")
+            print("Recipe entry is valid")
             break
 
     return user_entry
 
 
 def check_entry(values):
+    """
+    Inside the try, converts the values to strings.
+    Raises a TypeError if the value cannot be converted
+    to a string, or if there are not for entries.
+    """
     try:
         [str(entries) for entries in values]
-        if len(values) != 4:
-            raise ValueError(
+        if not len(values):
+            raise TypeError(
                 f"Four entries are required. You have provided {len(values)}\n"
             )
     except ValueError as error:
@@ -52,4 +57,17 @@ def check_entry(values):
     return True
 
 
-add_new_recipe()
+def add_to_worksheet(recipes, worksheet):
+    """
+    Process the list of details into the corresponding
+    worksheet. Updates the recipe and URL tab to include
+    the data
+    """ 
+    print(f"Adding the delicious recipe to {worksheet} worksheet")
+    update_worksheet = SHEET.worksheet(worksheet)
+    update_worksheet.append_row(recipes)
+    print(f"Recipe safely stored in the {worksheet} worksheet")
+
+
+recipes = add_new_recipe()
+add_to_worksheet(recipes, "meat_recipes")
