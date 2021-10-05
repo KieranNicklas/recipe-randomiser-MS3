@@ -21,13 +21,11 @@ def add_new_recipe():
 
     while True:
         print("Please enter the name of the recipe, followed by the URL.")
-        print("Then, please enter whether the recipe is suitable for Vegans") 
+        print("Then, please enter whether the recipe is suitable for Vegans")
         print("And finally, Vegetarians")
 
         recipe_entry = input("Please enter your recipe name here\n")
         url_entry = input("Please enter the recipe's URL\n")
-        # is_vegan = input("Is the recipe Vegan friendly? Yes or No\n")
-        # is_vegetarian = input("Is the recipe Vegetarian? Yes or No\n")
 
         user_entry = [recipe_entry, url_entry]
 
@@ -57,12 +55,33 @@ def check_entry(values):
     return True
 
 
+def determine_worksheet():
+    """
+    Determines which worksheet the recipe should be appended
+    to based on whether it is suitable for vegans or vegetarians
+    """
+
+    is_vegan = input("Is the recipe Vegan friendly? Yes or No\n")
+    is_vegetarian = input("Is the recipe Vegetarian? Yes or No\n")
+
+    if is_vegan == "Yes" and is_vegetarian == "Yes":
+        worksheet = "vegan_recipes"
+    elif is_vegan == "Yes" and is_vegetarian == "No":
+        worksheet = "vegan_recipes"
+    elif is_vegan == "No" and is_vegetarian == "Yes":
+        worksheet = "vegetarian_recipes"
+    else:
+        worksheet = "meat_recipes"
+
+    return worksheet
+
+
 def add_to_worksheet(recipes, worksheet):
     """
     Process the list of details into the corresponding
     worksheet. Updates the recipe and URL tab to include
     the data
-    """ 
+    """
     print(f"Adding the delicious recipe to {worksheet} worksheet")
     update_worksheet = SHEET.worksheet(worksheet)
     update_worksheet.append_row(recipes)
@@ -70,4 +89,5 @@ def add_to_worksheet(recipes, worksheet):
 
 
 recipes = add_new_recipe()
-add_to_worksheet(recipes, "meat_recipes")
+correct_worksheet = determine_worksheet()
+add_to_worksheet(recipes, correct_worksheet)
