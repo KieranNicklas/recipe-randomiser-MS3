@@ -15,30 +15,51 @@ SHEET = GSPREAD_CLIENT.open('recipes')
 
 def option_selection():
     """
-    Provides the user with the option to add, amend, remove or 
+    Provides the user with the option to add, amend, remove or
     print their recipes
     """
-    print("Please select from one of the following options\n")
-    print("If you would like to add a new recipe, please enter 1\n")
-    print("If you would like to amend an existing recipe, please enter 2\n")
-    print("If you would like to delete an existig recipe, please enter 3\n")
-    print("If you would like to print a number of recipes, please enter 4\n")
+    while True:
+        print("Please select from one of the following options\n")
+        print("To add a new recipe, please enter 1\n")
+        print("To amend an existing recipe, please enter 2\n")
+        print("To delete an existig recipe, please enter 3\n")
+        print("To print a number of recipes, please enter 4\n")
 
-    option_choice = int(input("Please enter your choice here\n"))
+        option_choice = int(input("Please enter your choice here\n"))
 
-    if option_choice == 1:
-        add_new_recipe()
-    elif option_choice == 2:
-        amend_existing_recipe()
-    elif option_choice == 3:
-        delete_existing_choice()
-    elif option_choice == 4:
-        show_recipes
-    else:
-        raise ValueError(
-            f"A valid option was not entered, you entered {option_choice}."
-            f"Please try again"
-        )
+        if option_choice == 1:
+            add_new_recipe()
+        elif option_choice == 2:
+            amend_existing_recipe()
+        elif option_choice == 3:
+            delete_existing_choice()
+        elif option_choice == 4:
+            show_recipes()
+
+        if validate_option(option_choice):
+            print("Thank you for your selection\n")
+            break
+
+    return option_choice
+
+
+def validate_option(entry):
+    """
+    Checks the user choice regarding whether to add, amend, delete
+    or view existing recipes. Returns a ValueError if the number
+    is not an integer, or whether it is not one of the four
+    numbers
+    """
+    try:
+        if entry == 0 or entry >= 5:
+            raise ValueError(
+                f"Please enter a valid number. You entered {entry}"
+            )
+    except ValueError as incorrect:
+        print(f"Invalid data: {incorrect}, please try again\n")
+        return False
+
+    return True
 
 
 def add_new_recipe():
@@ -49,36 +70,29 @@ def add_new_recipe():
 
     while True:
         print("Please enter the name of the recipe, followed by the URL.")
-        print("Then, please enter whether the recipe is suitable for Vegans")
-        print("And finally, Vegetarians")
 
         recipe_entry = input("Please enter your recipe name here\n")
         url_entry = input("Please enter the recipe's URL\n")
 
-        user_entry = [recipe_entry, url_entry]
+        user_entry = recipe_entry, url_entry
 
-        if check_entry(user_entry):
+        if check_entry(recipe_entry, url_entry):
             print("Recipe entry is valid")
             break
 
     return user_entry
 
 
-def check_entry(values):
+def check_entry(recipe, url):
     """
-    Inside the try, converts the values to strings.
-    Raises a TypeError if the value cannot be converted
-    to a string, or if there are not for entries.
+    Checks to see whether either the recipe entry or url entry is empty
     """
-    try:
-        [str(entries) for entries in values]
-        if not values:
-            raise TypeError(
-                f"Four entries are required. You have provided {len(values)}\n"
-            )
-    except ValueError as error:
-        print(f"Invalid data: {error}, please try again\n")
-        return False
+    if not recipe and url:
+        print("Recipe and url entry are empty, please add a recipe and url")
+    elif not recipe:
+        print("Recipe entry is empty, please add a recipe name")
+    elif not url:
+        print("URL entry is empty. Please add a URL")
 
     return True
 
@@ -98,8 +112,14 @@ def determine_worksheet():
         worksheet = "vegan_recipes"
     elif is_vegan == "No" and is_vegetarian == "Yes":
         worksheet = "vegetarian_recipes"
-    else:
+    elif is_vegan == "No" and is_vegetarian == "No":
         worksheet = "meat_recipes"
+    elif not is_vegan == "Yes" or "No":
+        f"The entry {is_vegan} is invalid. Please try again"
+        return False
+    elif not is_vegetarian == "Yes" or "No":
+        f"The entry {is_vegetarian} is invalid. Please try again"
+        return False
 
     return worksheet
 
@@ -116,19 +136,59 @@ def add_to_worksheet(recipes, worksheet):
     print(f"Recipe safely stored in the {worksheet} worksheet")
 
 
+def amend_existing_recipe():
+    """
+    Pulls through the existing data from the specified worksheet
+    Prints the values as a dictionary to allow the user to indicate
+    which item to amend
+    """
+    print("To amend the meat recipe list, please enter 1")
+    print("To amend the vegan recipe list, please enter 2")
+    print("To amend the vegetarian recipe, please enter 3\n")
+    user_choice = int(input("Please enter your choice here"))
+
+    if user_choice == 1:
+        worksheet = "meat_recipes"
+    elif user_choice == 2:
+        worksheet = "vegan_recipes"
+    elif user_choice == 3:
+        worksheet = "vegetarian_recipes"
+
+    return worksheet
+
+
+def delete_existing_choice():
+    """
+    Pulls through the existing data from the specified worksheet
+    Prints the values as a dictionary to allow the user to indicate
+    which item to delete
+    """
+
+
+def show_recipes():
+    """
+    Pulls through a random number of recipes from the google sheet
+    and prints to the terminal
+    """
+
+
 def repeat_process():
     """
     Provides the user with the option to return to the beginning
     to add another recipe
     """
 
-    user_choice = input("Would you like to add another recipe?\n")
+    user_choice = input("Would you like to start again? Yes or No\n")
     if user_choice == "Yes":
-        add_new_recipe()
+        option_selection()
     elif user_choice == "No":
-        print("Thank you for adding your recipe(s)")
+        print("Thank you for action")
+    else:
+        print("Please enter a valid option")
+        repeat_process()
 
 
+option_selection()
 recipes = add_new_recipe()
 correct_worksheet = determine_worksheet()
 add_to_worksheet(recipes, correct_worksheet)
