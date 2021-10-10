@@ -31,3 +31,4 @@ The deployment terminal is set to 80 columns by 24 rows. That means that each li
 Happy coding!
 
 Credit:
+Identifying whether a URL is valid found on Kite.com https://www.kite.com/python/answers/how-to-check-if-a-string-is-a-url-in-python
